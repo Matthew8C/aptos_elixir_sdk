@@ -28,7 +28,8 @@ defmodule Aptos.MixProject do
   defp docs do
     [
       extras: ["README.md"],
-      main: "readme"
+      main: "readme",
+      source_ref: "master"
     ]
   end
 
