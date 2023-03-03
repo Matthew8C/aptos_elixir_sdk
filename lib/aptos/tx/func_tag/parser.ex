@@ -3,7 +3,7 @@ defmodule Aptos.Tx.FuncTag.Parser do
 
   import NimbleParsec
 
-  hex_char = ascii_char([?0..?9, ?a..?d, ?A..?D])
+  hex_char = ascii_char([?0..?9, ?a..?f, ?A..?F])
 
   hex =
     string("0x")
@@ -14,13 +14,13 @@ defmodule Aptos.Tx.FuncTag.Parser do
     |> tag(:address)
 
   module =
-    ascii_char([?a..?z, ?A..?z])
-    |> repeat(ascii_char([?0..?9, ?a..?z, ?A..?z, ?_]))
+    ascii_char([?a..?z, ?A..?Z])
+    |> repeat(ascii_char([?0..?9, ?a..?z, ?A..?Z, ?_]))
     |> tag(:module)
 
   name =
-    ascii_char([?a..?z, ?A..?z])
-    |> repeat(ascii_char([?0..?9, ?a..?z, ?A..?z, ?_]))
+    ascii_char([?a..?z, ?A..?Z])
+    |> repeat(ascii_char([?0..?9, ?a..?z, ?A..?Z, ?_]))
     |> tag(:name)
 
   separator = ignore(string("::"))
