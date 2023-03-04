@@ -1,4 +1,4 @@
-defmodule Aptos.Tx.TypeTag do
+defmodule Aptos.DataType.TypeTag do
   @moduledoc """
   Implemented in accordance to:
   https://github.com/move-language/move/blob/0c9cb3a3adae184a23906f76972f9e025e4e0b7c/language/move-core/types/src/language_storage.rs#L25

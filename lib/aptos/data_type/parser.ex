@@ -1,4 +1,4 @@
-defmodule Aptos.Tx.FuncTag.Parser do
+defmodule Aptos.DataType.Parser do
   @moduledoc false
 
   import NimbleParsec
@@ -11,17 +11,11 @@ defmodule Aptos.Tx.FuncTag.Parser do
     |> times(hex_char, min: 1, max: 64)
     |> reduce({List, :to_string, []})
     |> map({Aptos.Util, :hex_to_binary, []})
-    |> tag(:address)
 
-  module =
+  valid_name =
     ascii_char([?a..?z, ?A..?Z])
     |> repeat(ascii_char([?0..?9, ?a..?z, ?A..?Z, ?_]))
-    |> tag(:module)
-
-  name =
-    ascii_char([?a..?z, ?A..?Z])
-    |> repeat(ascii_char([?0..?9, ?a..?z, ?A..?Z, ?_]))
-    |> tag(:name)
+    |> reduce({List, :to_string, []})
 
   separator = ignore(string("::"))
 
@@ -49,12 +43,22 @@ defmodule Aptos.Tx.FuncTag.Parser do
     |> concat(type_arguments)
     |> tag(:vector)
 
+  type_info =
+    hex
+    |> tag(:account_address)
+    |> concat(separator)
+    |> concat(valid_name |> tag(:module_name))
+    |> concat(separator)
+    |> concat(valid_name |> tag(:struct_name))
+    |> tag(:type_info)
+
   func_tag =
     hex
+    |> tag(:address)
     |> concat(separator)
-    |> concat(module)
+    |> concat(valid_name |> tag(:module))
     |> concat(separator)
-    |> concat(name)
+    |> concat(valid_name |> tag(:name))
     |> concat(optional(type_arguments))
     |> tag(:func_tag)
 
@@ -72,6 +76,7 @@ defmodule Aptos.Tx.FuncTag.Parser do
       func_tag
     ])
 
+  defparsec(:type_info, type_info)
   defparsec(:func_tag, func_tag)
   defparsec(:type_tag, type_tag)
 end

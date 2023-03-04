@@ -1,12 +1,12 @@
-defmodule Aptos.Tx.FuncTag do
+defmodule Aptos.DataType.StructTag do
   @moduledoc """
-  Mostly corresponds to the `StructTag` in Aptos terminology.
+  Move `StructTag`.
   """
 
   defstruct [:address, :module, :name, :type_arguments]
 
   alias BCS.DataType, as: T
-  alias Aptos.Tx.TypeTag
+  alias Aptos.DataType.TypeTag
 
   @type t() :: %__MODULE__{
           address: binary,
@@ -32,7 +32,7 @@ defmodule Aptos.Tx.FuncTag do
   end
 
   @doc """
-  Makes a new `FuncTag` data.
+  Makes a new `StructTag` data.
   """
   @spec new(keyword()) :: t()
   def new(attrs \\ []) do
@@ -41,7 +41,7 @@ defmodule Aptos.Tx.FuncTag do
 
   # Parse
 
-  alias Aptos.Tx.FuncTag.Parser
+  alias Aptos.DataType.Parser
 
   @doc """
   Parses an identifier such as `"0x1::aptos_coin::AptosCoin"`.
@@ -50,11 +50,11 @@ defmodule Aptos.Tx.FuncTag do
 
   For example:
 
-  `FuncTag.from_string("0x1::aptos_coin::AptosCoin")`
+  `StructTag.from_string("0x1::aptos_coin::AptosCoin")`
   gives
   ```
   {:ok,
-    %FuncTag{
+    %StructTag{
       address: <<1>>,
       module: "aptos_coin",
       name: "AptosCoin",
@@ -86,8 +86,8 @@ defmodule Aptos.Tx.FuncTag do
 
   defp from_parsed({:func_tag, func_tag}) do
     [address] = Keyword.fetch!(func_tag, :address)
-    module = Keyword.fetch!(func_tag, :module) |> List.to_string()
-    name = Keyword.fetch!(func_tag, :name) |> List.to_string()
+    [module] = Keyword.fetch!(func_tag, :module)
+    [name] = Keyword.fetch!(func_tag, :name)
 
     type_arguments =
       func_tag

@@ -29,19 +29,19 @@ defmodule Aptos.Tx.Payload do
 
   defmodule EntryFunction do
     alias BCS.DataType, as: T
-    alias Aptos.Tx.FuncTag
+    alias Aptos.DataType.StructTag
 
     defstruct [:func_tag, :arguments]
 
     @type t() :: %__MODULE__{
-            func_tag: FuncTag.t(),
+            func_tag: StructTag.t(),
             arguments: list()
           }
 
     @spec bcs_layout(list(T.t()), list(T.t())) :: keyword(T.t())
     def bcs_layout(t_args_layout, arg_layout) do
       [
-        func_tag: FuncTag.t(t_args_layout),
+        func_tag: StructTag.t(t_args_layout),
         arguments: T.DoubleEncode.t(arg_layout)
       ]
     end

@@ -31,15 +31,15 @@ defmodule Aptos.Contract.Coin do
   # Write
 
   alias Aptos.Tx.Payload
-  alias Aptos.Tx.FuncTag
+  alias Aptos.DataType.StructTag
   alias BCS.DataType, as: T
 
   @spec transfer(binary, non_neg_integer(), String.t()) :: {Payload.t(), T.Choice.t()}
   def transfer(recipient_addr, amount, coin_id) do
-    {:ok, value, layout} = FuncTag.from_string(coin_id)
+    {:ok, value, layout} = StructTag.from_string(coin_id)
 
     func_tag =
-      FuncTag.new(
+      StructTag.new(
         address: <<1>>,
         module: "coin",
         name: "transfer",
