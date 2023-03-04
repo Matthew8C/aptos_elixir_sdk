@@ -13,7 +13,7 @@ The package can be installed by adding `aptos` to your list of dependencies in `
 ```elixir
 def deps do
   [
-    {:aptos, "~> 0.1.0"},
+    {:aptos, "~> 0.2.0"},
     {:bcs, "~> 0.1.1", hex: :ex_bcs}
   ]
 end
