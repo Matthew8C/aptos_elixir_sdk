@@ -32,7 +32,7 @@ defmodule Aptos.RestClient do
   end
 
   @doc """
-  Retrieves all account resources for a given account.
+  Retrieves a collection of account resources for a given account.
 
   Available options are:
   - `{:ledger_version, pos_integer()}`
@@ -43,6 +43,17 @@ defmodule Aptos.RestClient do
   def list_account_resources(address, opts \\ []) do
     get("/accounts/#{binary_to_hex(address)}/resources", query: opts)
     |> Result.from_tesla()
+  end
+
+  @doc """
+  Retrieves all account resources for a given account, automatically running through pagination.
+
+  Available options are:
+  - `{:ledger_version, pos_integer()}`
+  """
+  @spec list_all_account_resources(binary, keyword()) :: Result.from_tesla()
+  def list_all_account_resources(address, opts \\ []) do
+    fetch_all_by_cursor(:list_account_resources, [address], opts)
   end
 
   @doc """
@@ -58,17 +69,28 @@ defmodule Aptos.RestClient do
   end
 
   @doc """
-  Retrieves all account modules' bytecode for a given account
+  Retrieves a collection of account modules' bytecode for a given account.
 
   Available options are:
   - `{:ledger_version, pos_integer()}`
   - `{:limit, pos_integer()}`
   - `{:start, String.t()}`
   """
-  @spec list_account_modules(binary) :: Result.from_tesla()
-  def list_account_modules(address) do
-    get("/accounts/#{binary_to_hex(address)}/modules")
+  @spec list_account_modules(binary, keyword()) :: Result.from_tesla()
+  def list_account_modules(address, opts \\ []) do
+    get("/accounts/#{binary_to_hex(address)}/modules", query: opts)
     |> Result.from_tesla()
+  end
+
+  @doc """
+  Retrieves all account modules' bytecode for a given account, automatically running through pagination.
+
+  Available options are:
+  - `{:ledger_version, pos_integer()}`
+  """
+  @spec list_all_account_modules(binary, keyword()) :: Result.from_tesla()
+  def list_all_account_modules(address, opts \\ []) do
+    fetch_all_by_cursor(:list_account_modules, [address], opts)
   end
 
   @doc """
@@ -77,9 +99,9 @@ defmodule Aptos.RestClient do
   Available options are:
   - `{:ledger_version, pos_integer()}`
   """
-  @spec show_account_module(binary, String.t()) :: Result.from_tesla()
-  def show_account_module(address, module_name) do
-    get("/accounts/#{binary_to_hex(address)}/module/#{module_name}")
+  @spec show_account_module(binary, String.t(), keyword()) :: Result.from_tesla()
+  def show_account_module(address, module_name, opts \\ []) do
+    get("/accounts/#{binary_to_hex(address)}/module/#{module_name}", query: [])
     |> Result.from_tesla()
   end
 
@@ -204,5 +226,32 @@ defmodule Aptos.RestClient do
   def list_events_by_creation_number(address, creation_number, opts \\ []) do
     get("/accounts/#{binary_to_hex(address)}/events/#{creation_number}", query: opts)
     |> Result.from_tesla()
+  end
+
+  # Helpers
+
+  defp fetch_all_by_cursor(func, args, opts) do
+    cleaned_opts = Keyword.drop(opts, [:cursor, :limit])
+    fetch_all_by_cursor(func, args, cleaned_opts, nil, [])
+  end
+
+  defp fetch_all_by_cursor(func, args, opts, cursor, fetched) do
+    merged_opts =
+      if cursor do
+        Keyword.put(opts, :start, cursor)
+      else
+        opts
+      end
+
+    with {:ok, headers, entries} <-
+           apply(__MODULE__, func, args ++ [merged_opts]) do
+      case headers[:cursor] do
+        nil ->
+          {:ok, headers, fetched ++ entries}
+
+        new_cursor ->
+          fetch_all_by_cursor(func, args, opts, new_cursor, fetched ++ entries)
+      end
+    end
   end
 end
