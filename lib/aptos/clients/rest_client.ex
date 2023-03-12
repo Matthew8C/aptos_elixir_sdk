@@ -101,7 +101,7 @@ defmodule Aptos.RestClient do
   """
   @spec show_account_module(binary, String.t(), keyword()) :: Result.from_tesla()
   def show_account_module(address, module_name, opts \\ []) do
-    get("/accounts/#{binary_to_hex(address)}/module/#{module_name}", query: [])
+    get("/accounts/#{binary_to_hex(address)}/module/#{module_name}", query: opts)
     |> Result.from_tesla()
   end
 
