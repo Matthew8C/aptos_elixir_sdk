@@ -188,7 +188,7 @@ defmodule Aptos.RestClient do
   Available options are:
   - `{:ledger_version, pos_integer()}`
   """
-  @spec show_table_item(String.t(), String.t(), String.t(), String.t()) :: Result.from_tesla()
+  @spec show_table_item(any, String.t(), String.t(), String.t()) :: Result.from_tesla()
   def show_table_item(key, handle, key_type, value_type, opts \\ []) do
     body = %{
       key_type: key_type,
