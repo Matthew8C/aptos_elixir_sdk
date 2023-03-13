@@ -4,7 +4,7 @@ defmodule Aptos.DataType.TypeInfo do
   """
 
   alias Aptos.DataType.Parser
-  import Aptos.Util, only: [binary_to_hex: 1, hex_to_binary: 1]
+  import Aptos.Util, only: [binary_to_hex: 1, binary_to_address: 1, hex_to_binary: 1]
 
   defstruct [:account_address, :module_name, :struct_name]
 
@@ -42,14 +42,14 @@ defmodule Aptos.DataType.TypeInfo do
 
   @spec to_string(t()) :: String.t()
   def to_string(t) do
-    [binary_to_hex(t.account_address), t.module_name, t.struct_name]
+    [binary_to_address(t.account_address), t.module_name, t.struct_name]
     |> Enum.join("::")
   end
 
   @spec to_payload(t()) :: payload()
   def to_payload(t) do
     %{
-      account_address: binary_to_hex(t.account_address),
+      account_address: binary_to_address(t.account_address),
       module_name: binary_to_hex(t.module_name),
       struct_name: binary_to_hex(t.struct_name)
     }

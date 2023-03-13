@@ -4,6 +4,11 @@ defmodule Aptos.Util do
     "0x" <> Base.encode16(bin, case: :lower)
   end
 
+  @spec binary_to_address(binary) :: String.t()
+  def binary_to_address(bin) do
+    "0x" <> String.trim_leading(Base.encode16(bin, case: :lower), "0")
+  end
+
   @spec hex_to_binary(String.t()) :: binary
   def hex_to_binary("0x" <> hex) do
     hex_to_binary(hex)
