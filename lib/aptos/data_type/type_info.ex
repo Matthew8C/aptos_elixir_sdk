@@ -42,7 +42,8 @@ defmodule Aptos.DataType.TypeInfo do
 
   @spec to_string(t()) :: String.t()
   def to_string(t) do
-    binary_to_hex(t.account_address) <> "::" <> t.module_name <> t.struct_name
+    [binary_to_hex(t.account_address), t.module_name, t.struct_name]
+    |> Enum.join("::")
   end
 
   @spec to_payload(t()) :: payload()
