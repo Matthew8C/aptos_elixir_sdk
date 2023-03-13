@@ -47,7 +47,7 @@ defmodule Aptos.DataType.TypeInfo do
   end
 
   @spec to_payload(t()) :: payload()
-  def(to_payload(t)) do
+  def to_payload(t) do
     %{
       account_address: binary_to_hex(t.account_address),
       module_name: binary_to_hex(t.module_name),
